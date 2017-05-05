@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import base64
 import hashlib
 import json
@@ -17,7 +18,6 @@ def dl_attatchment_from_object(directory, base, object):
     f.seek(0)
     m = base64.b64encode(hashlib.md5(f.read()).digest())
     f.close()
-    # print(m, object['md5'])
     if m.decode('utf8') != object['md5']:
         print("ERROR: Incorrect md5 hash on file ", filename, ". Deleting ", filename, sep = '')
         os.remove(directory + filename)
@@ -38,10 +38,14 @@ def dl_all_attatchments_from_post(directory, base, post):
 
 
 def main():
-    if(len(sys.argv) != 3):
+    if(len(sys.argv) not in [3,4]):
         print(sys.argv)
-        print("Usage: lainloader threadurl directorypath")
+        print("Usage: lainloader threadurl directorypath [startpost]")
         exit()
+
+    startpost = 0
+    if(len(sys.argv) == 4):
+        startpost = int(sys.argv[3])
 
     directory = sys.argv[2]
     if directory[-1] != '/':
@@ -55,7 +59,8 @@ def main():
 
     page = json.load(urllib.request.urlopen(url))
     for post in page["posts"]:
-        dl_all_attatchments_from_post(directory, base, post)
+        if(int(post['no']) >= startpost):
+            dl_all_attatchments_from_post(directory, base, post)
 
 if __name__ == "__main__":
     main()
