@@ -11,6 +11,8 @@ import urllib.request
 # object is a json object that contains filename, ext, md5, and tim
 # returns nothing
 def dl_attatchment_from_object(directory, base, object):
+    if object['ext'] == 'deleted':
+        return
     filename = object['filename'] + object['ext']
     print(filename)
     f = open(directory + filename, 'wb+')
